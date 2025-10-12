@@ -23,8 +23,6 @@ namespace DashBoardAPI.Controllers
         public IActionResult GetUserRoles([FromQuery] long userId)
         {
             return Ok(new ApiResponse<List<long>> { Success = true, Data = new List<long> { 1, 2 } });
-        }
-
-       
+        }  
     }
 }

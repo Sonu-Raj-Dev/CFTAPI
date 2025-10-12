@@ -1,4 +1,6 @@
 ﻿using DashBoardAPI.Entity;
+using DashBoardAPI.Service.CustomerService;
+using DashBoardAPI.Service.LoginService;
 using Microsoft.AspNetCore.Mvc;
 using static DashBoardAPI.Entity.MasterModels;
 
@@ -8,15 +10,29 @@ namespace DashBoardAPI.Controllers
     [Route("api/[controller]")]
     public class CustomerMasterController : ControllerBase
     {
+
+        private readonly ICustomerService _customerservice;
+
+
+        public CustomerMasterController(ICustomerService customerservice)
+        {
+
+            this._customerservice = customerservice;
+        }
+
+
+
         [HttpGet("GetAllCustomers")]
         public IActionResult GetAllCustomers()
         {
-            var customers = new List<CustomerModel>
-            {
-                new() { CustomerId = 201, CustomerName = "Acme Corp", MobileNumber = "9000000000", Email = "support@acme.com", Address = "1 Infinite Loop" }
-            };
+            var customer = _customerservice.GetCustomerDetails();
 
-            return Ok(new ApiResponse<List<CustomerModel>> { Success = true, Data = customers });
+            return Ok(new
+            {
+                Success = true,
+                Data = customer
+            });
         }
+
     }
 }

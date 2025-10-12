@@ -1,7 +1,12 @@
 ﻿using DashBoardAPI.Entity;
 using DashBoardAPI.Repository;
+using DashBoardAPI.Service.ComplaintService;
+using DashBoardAPI.Service.CustomerService;
 using DashBoardAPI.Service.DashBoardService;
+using DashBoardAPI.Service.EngineerService;
+using DashBoardAPI.Service.LoginService;
 using Microsoft.EntityFrameworkCore;
+using System.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +24,11 @@ builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("
 
 // Register dependencies
 builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
-builder.Services.AddScoped<IDashBoardService, DashBoardService>();
+builder.Services.AddScoped<IDashBoardService, DashBoardService>(); 
+builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IComplaintService, ComplaintService>();
+builder.Services.AddScoped<IEngineerService, EngineerServeice>();
 builder.Services.AddMemoryCache();
 
 // ✅ CORS configuration for React

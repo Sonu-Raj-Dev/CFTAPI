@@ -1,5 +1,8 @@
 ﻿using DashBoardAPI.Entity;
+using DashBoardAPI.Service.ComplaintService;
+using DashBoardAPI.Service.LoginService;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using static DashBoardAPI.Entity.MasterModels;
 
 namespace DashBoardAPI.Controllers
@@ -8,15 +11,29 @@ namespace DashBoardAPI.Controllers
     [Route("api/[controller]")]
     public class PermissionMasterController : ControllerBase
     {
-        [HttpGet("GetAllPermissions")]
-        public IActionResult GetAllPermissions()
-        {
-            var permissions = new List<PermissionModel>
-            {
-                new() { PermissionId = 10, PermissionKey = "Users.Read", Description = "Can read users" }
-            };
+        private readonly ILoginService _loginservice;
 
-            return Ok(new ApiResponse<List<PermissionModel>> { Success = true, Data = permissions });
+
+        public PermissionMasterController(ILoginService complaintservice)
+        {
+
+            this._loginservice = complaintservice;
+        }
+
+        [HttpGet("GetAllPermissions")]
+        public IActionResult GetAllPermissionByUserIdAndRoleId([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<PermissionEntity>(request.GetRawText());
+
+
+            var Permissions = _loginservice.GetPermissionByUserId(data.Id);
+
+            return Ok(new
+            {
+                Success = true,
+                Data = Permissions
+            });
         }
     }
 }

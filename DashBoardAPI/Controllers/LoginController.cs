@@ -1,20 +1,33 @@
 ﻿using DashBoardAPI.Entity;
+using DashBoardAPI.Service.DashBoardService;
+using DashBoardAPI.Service.LoginService;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace DashBoardAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LoginMasterController : ControllerBase
+    public class LoginController : ControllerBase
     {
-        /// <summary>
-        /// POST: /api/LoginMaster/GetLoginDetailsByEmailIdAndPassword
-        /// AuthRequired: false
-        /// </summary>
-        [HttpPost("Login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+
+        private readonly ILoginService _loginservice;
+
+
+        public LoginController(ILoginService loginservice)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+
+            this._loginservice = loginservice;
+        }
+
+
+        [HttpPost("UserLogin")]
+        public IActionResult UserLogin([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<LoginEntity>(request.GetRawText());
+
+            if (data == null || string.IsNullOrWhiteSpace(data.Email) || string.IsNullOrWhiteSpace(data.Password))
             {
                 return BadRequest(new JsonResponseEntity
                 {
@@ -25,59 +38,18 @@ namespace DashBoardAPI.Controllers
                 });
             }
 
-            // Simulated authentication for demo
-            if (request.Email == "user@example.com" && request.Password == "Secret#123")
-            {
-                var userData = new UserData
-                {
-                    Id = 101,
-                    Name = "Jane Doe",
-                    Email = request.Email,
-                    Roles = new List<string> { "Admin" },
-                    Permissions = new Dictionary<long, string>
-                    {
-                        { 1, "dashboard" },
-                        { 2, "complaints" }
-                    },
-                    Token = "jwt-or-session-token",
-                    RoleId = 1
-                };
+            var userResponse = _loginservice.GetUserDetailsByEmailAndPassword(data.Email, data.Password);
 
-                return Ok(new JsonResponseEntity
-                {
-                    Status = ApiStatus.OK,
-                    Message = "Login successful",
-                    Data = userData,
-                    TotalCount = 1
-                });
-            }
+             if (userResponse.Status == ApiStatus.OK)
+                return Ok(userResponse);
 
-            return Unauthorized(new JsonResponseEntity
-            {
-                Status = ApiStatus.AccessDenied,
-                Message = "Invalid credentials",
-                Data = null,
-                TotalCount = 0
-            });
+            if (userResponse.Status == ApiStatus.AccessDenied)
+                return Unauthorized(userResponse);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, userResponse);
         }
+
     }
 
-    // ✅ REQUEST SCHEMA
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
 
-    // ✅ USER DATA (Nested object inside response)
-    public class UserData
-    {
-        public object Id { get; set; }
-        public string Name { get; set; }
-        public string Email{ get; set; }
-        public List<string> Roles { get; set; }
-        public Dictionary<long, string> Permissions { get; set; }
-        public string Token { get; set; }
-        public long RoleId { get; set; }
-    }
 }
