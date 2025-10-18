@@ -3,20 +3,20 @@ using DashBoardAPI.Repository;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace DashBoardAPI.Service.EngineerService
+namespace DashBoardAPI.Service.UserService
 {
-    public class EngineerServeice:IEngineerService
+    public class UserService:IUserService
     {
-        private readonly IRepository<EngineerEntity> _engineerRepository;
+        private readonly IRepository<UserEntity> _userRepository;
 
-        public EngineerServeice(IRepository<EngineerEntity> engineerRepository)
+        public UserService(IRepository<UserEntity> userRepository)
         {
-            _engineerRepository = engineerRepository;
+            _userRepository = userRepository;
 
         }
 
-    
-        public List<JsonResponseEntity> GetEngineerDetails()
+
+        public List<JsonResponseEntity> GetUserDetails()
         {
             var responses = new List<JsonResponseEntity>();
 
@@ -26,14 +26,14 @@ namespace DashBoardAPI.Service.EngineerService
                 {
                     authCommand.CommandType = CommandType.StoredProcedure;
 
-                    var complaints = _engineerRepository.GetRecords(authCommand).ToList();
+                    var Users = _userRepository.GetRecords(authCommand).ToList();
 
-                    foreach (var item in complaints)
+                    foreach (var item in Users)
                     {
                         responses.Add(new JsonResponseEntity
                         {
                             Status = ApiStatus.OK,
-                            Message = "Engineers fetched successfully.",
+                            Message = "Users fetched successfully.",
                             Data = item
                         });
                     }
@@ -44,7 +44,7 @@ namespace DashBoardAPI.Service.EngineerService
                 responses.Add(new JsonResponseEntity
                 {
                     Status = ApiStatus.Error,
-                    Message = "Error occurred while fetching Engineers: " + ex.Message,
+                    Message = "Error occurred while fetching Users: " + ex.Message,
                     Data = null
                 });
             }

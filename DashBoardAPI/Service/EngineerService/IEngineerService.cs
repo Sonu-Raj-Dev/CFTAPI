@@ -4,6 +4,6 @@ namespace DashBoardAPI.Service.EngineerService
 {
     public interface IEngineerService
     {
-        JsonResponseEntity GetEngineerDetails();
+        List<JsonResponseEntity> GetEngineerDetails();
     }
 }

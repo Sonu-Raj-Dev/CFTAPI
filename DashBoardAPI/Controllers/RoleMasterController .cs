@@ -8,7 +8,7 @@ namespace DashBoardAPI.Controllers
     [Route("api/[controller]")]
     public class RoleMasterController : ControllerBase
     {
-        [HttpGet("GetAllRoles")]
+        [HttpPost("GetAllRoles")]
         public IActionResult GetAllRoles()
         {
             var roles = new List<RoleModel>
@@ -20,7 +20,7 @@ namespace DashBoardAPI.Controllers
             return Ok(new ApiResponse<List<RoleModel>> { Success = true, Data = roles });
         }
 
-        [HttpGet("GetRolePermissions")]
+        [HttpPost("GetRolePermissions")]
         public IActionResult GetRolePermissions([FromQuery] long roleId)
         {
             return Ok(new ApiResponse<List<long>> { Success = true, Data = new List<long> { 10, 11, 12 } });

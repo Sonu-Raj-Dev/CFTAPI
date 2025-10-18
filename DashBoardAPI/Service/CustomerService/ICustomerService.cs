@@ -4,6 +4,6 @@ namespace DashBoardAPI.Service.CustomerService
 {
     public interface ICustomerService
     {
-        JsonResponseEntity GetCustomerDetails();
+        List<JsonResponseEntity> GetCustomerDetails();
     }
 }

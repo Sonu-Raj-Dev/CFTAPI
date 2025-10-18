@@ -15,31 +15,43 @@ namespace DashBoardAPI.Service.CustomerService
 
         }
 
-        public JsonResponseEntity GetCustomerDetails()
+    
+        public List<JsonResponseEntity> GetCustomerDetails()
         {
-            var response = new JsonResponseEntity();
+            var responses = new List<JsonResponseEntity>();
 
             try
             {
-                // Step 1: Authenticate user
-                var authCommand = new SqlCommand("stpGetCustomerDetails");
-                authCommand.CommandType = CommandType.StoredProcedure;
+                using (var authCommand = new SqlCommand("stpGetCustomerDetails"))
+                {
+                    authCommand.CommandType = CommandType.StoredProcedure;
+                  
+                    var complaints = _customerRepository.GetRecords(authCommand).ToList();
 
-                var Customer = _customerRepository.GetRecord(authCommand);
-
-
-                response.Status = ApiStatus.OK;
-                response.Message = "Customer Fetched";
-                response.Data = Customer;
+                    foreach (var item in complaints)
+                    {
+                        responses.Add(new JsonResponseEntity
+                        {
+                            Status = ApiStatus.OK,
+                            Message = "Customer fetched successfully.",
+                            Data = item
+                        });
+                    }
+                }
             }
             catch (Exception ex)
             {
-                response.Status = ApiStatus.Error;
-                response.Message = "Error occurred while logging in: " + ex.Message;
+                responses.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while fetching customer: " + ex.Message,
+                    Data = null
+                });
             }
 
-            return response;
+            return responses;
         }
+
 
     }
 }

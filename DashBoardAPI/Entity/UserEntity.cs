@@ -1,6 +1,6 @@
 ﻿namespace DashBoardAPI.Entity
 {
-    public class CustomerEntity:BaseEntity
+    public class UserEntity:BaseEntity
     {
         public long Id { get; set; }
         public string Name { get; set; } = "";

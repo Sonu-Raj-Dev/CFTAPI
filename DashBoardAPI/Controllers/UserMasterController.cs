@@ -1,4 +1,5 @@
 ﻿using DashBoardAPI.Entity;
+using DashBoardAPI.Service.UserService;
 using Microsoft.AspNetCore.Mvc;
 using static DashBoardAPI.Entity.MasterModels;
 
@@ -8,16 +9,28 @@ namespace DashBoardAPI.Controllers
     [Route("api/[controller]")]
     public class UserMasterController : ControllerBase
     {
+
+
+        private readonly IUserService _userservice;
+
+
+        public UserMasterController(IUserService userservice)
+        {
+
+            this._userservice = userservice;
+        }
         [HttpPost("GetAllUsers")]
         public IActionResult GetAllUsers()
         {
-            var users = new List<UserModel>
-            {
-                new() { UserId = 101, Name = "Jane Doe", EmailId = "jane@example.com", MobileNumber = "9876543210", Address = "Baker St", IsActive = true }
-            };
+            var Engineer = _userservice.GetUserDetails();
 
-            return Ok(new ApiResponse<List<UserModel>> { Success = true, Data = users });
+            return Ok(new
+            {
+                Success = true,
+                Data = Engineer
+            });
         }
+       
 
         [HttpPost("GetUserRoles")]
         public IActionResult GetUserRoles([FromQuery] long userId)
