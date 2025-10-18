@@ -31,8 +31,8 @@ namespace DashBoardAPI.Repository
             string userName = _iConfig.GetSection("ConnectionStrings:UserName").Value;
             string password = _iConfig.GetSection("ConnectionStrings:Password").Value;
            // string connectionString = $"server={dataSource};database={database};user={userName};password={password};"/* $"server={dataSource};port=3306;database={database};user={userName};password={password};"*/;
-            string connectionString= $"Server=localhost\\MSSQLSERVER01;Database=CFT;Trusted_Connection=True;TrustServerCertificate=True";
-
+            // string connectionString= $"Server=localhost\\MSSQLSERVER01;Database=CFT;Trusted_Connection=True;TrustServerCertificate=True";
+            var connectionString = _iConfig.GetConnectionString("DefaultConnection");
             _connection = new SqlConnection(connectionString);
             //_connection = new MySqlConnection(connectionStrings.Value.Dev);
         }
