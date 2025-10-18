@@ -35,7 +35,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
-        policy.WithOrigins("http://localhost:3000")  // React default port
+        policy.WithOrigins("http://localhost:3000","http://CFTManagement.somee.com", "https://CFTManagement.somee.com")  // React default port
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
