@@ -12,10 +12,10 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["DashBoardAPI/DashBoardAPI.csproj", "DashBoardAPI/"]
-RUN dotnet restore "./DashBoardAPI/DashBoardAPI.csproj"
+COPY ["DashBoardAPI.csproj", "."]
+RUN dotnet restore "./DashBoardAPI.csproj"
 COPY . .
-WORKDIR "/src/DashBoardAPI"
+WORKDIR "/src"
 RUN dotnet build "./DashBoardAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
