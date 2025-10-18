@@ -20,7 +20,7 @@ namespace DashBoardAPI.Controllers
 
             this._engineerservice = engineerservice;
         }
-        [HttpGet("GetAllEngineers")]
+        [HttpPost("GetAllEngineers")]
         public IActionResult GetAllEngineers()
         {
            var Engineer=_engineerservice.GetEngineerDetails();

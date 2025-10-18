@@ -22,7 +22,7 @@ namespace DashBoardAPI.Controllers
 
 
 
-        [HttpGet("GetAllCustomers")]
+        [HttpPost("GetAllCustomers")]
         public IActionResult GetAllCustomers()
         {
             var customer = _customerservice.GetCustomerDetails();

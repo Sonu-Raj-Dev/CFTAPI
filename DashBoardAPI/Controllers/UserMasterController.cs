@@ -8,7 +8,7 @@ namespace DashBoardAPI.Controllers
     [Route("api/[controller]")]
     public class UserMasterController : ControllerBase
     {
-        [HttpGet("GetAllUsers")]
+        [HttpPost("GetAllUsers")]
         public IActionResult GetAllUsers()
         {
             var users = new List<UserModel>
@@ -19,7 +19,7 @@ namespace DashBoardAPI.Controllers
             return Ok(new ApiResponse<List<UserModel>> { Success = true, Data = users });
         }
 
-        [HttpGet("GetUserRoles")]
+        [HttpPost("GetUserRoles")]
         public IActionResult GetUserRoles([FromQuery] long userId)
         {
             return Ok(new ApiResponse<List<long>> { Success = true, Data = new List<long> { 1, 2 } });

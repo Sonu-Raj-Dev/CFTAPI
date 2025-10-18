@@ -4,7 +4,6 @@ namespace DashBoardAPI.Service.ComplaintService
 {
     public interface IComplaintService
     {
-        JsonResponseEntity GetComplaintDetailsByUserIdAndRoleId(Int64 UserId,Int64 RoleId);
-
+        List<JsonResponseEntity> GetComplaintDetailsByUserIdAndRoleId(long UserId, long RoleId);
     }
 }

@@ -18,7 +18,7 @@ namespace DashBoardAPI.Controllers
 
             this._complaintservice = complaintservice;
         }
-        [HttpPost("GetAllComplaints")]
+        [HttpGet("GetAllComplaints")]
         public IActionResult GetAllComplaints([FromBody] JsonElement request)
         {
             JsonResponseEntity apiResponse = new JsonResponseEntity();

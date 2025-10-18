@@ -15,33 +15,44 @@ namespace DashBoardAPI.Service.ComplaintService
 
         }
 
-        public JsonResponseEntity GetComplaintDetailsByUserIdAndRoleId(Int64 UserId,Int64 RoleId)
+        public List<JsonResponseEntity> GetComplaintDetailsByUserIdAndRoleId(long UserId, long RoleId)
         {
-            var response = new JsonResponseEntity();
+            var responses = new List<JsonResponseEntity>();
 
             try
             {
-                // Step 1: Authenticate user
-                var authCommand = new SqlCommand("stpGetAllComplaintsDetails");
-                authCommand.CommandType = CommandType.StoredProcedure;
-                authCommand.Parameters.AddWithValue("@UserId", UserId);
-                authCommand.Parameters.AddWithValue("@RoleId", RoleId);
+                using (var authCommand = new SqlCommand("stpGetAllComplaintsDetails"))
+                {
+                    authCommand.CommandType = CommandType.StoredProcedure;
+                    authCommand.Parameters.AddWithValue("@UserId", UserId);
+                    authCommand.Parameters.AddWithValue("@RoleId", RoleId);
 
-                var Complaint = _complaintRepository.GetRecord(authCommand);
+                    var complaints = _complaintRepository.GetRecords(authCommand).ToList();
 
-
-                response.Status = ApiStatus.OK;
-                response.Message = "Complaint Fetched";
-                response.Data = Complaint;
+                    foreach (var item in complaints)
+                    {
+                        responses.Add(new JsonResponseEntity
+                        {
+                            Status = ApiStatus.OK,
+                            Message = "Complaint fetched successfully.",
+                            Data = item
+                        });
+                    }
+                }
             }
             catch (Exception ex)
             {
-                response.Status = ApiStatus.Error;
-                response.Message = "Error occurred while logging in: " + ex.Message;
+                responses.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while fetching complaints: " + ex.Message,
+                    Data = null
+                });
             }
 
-            return response;
+            return responses;
         }
+
 
     }
 }
