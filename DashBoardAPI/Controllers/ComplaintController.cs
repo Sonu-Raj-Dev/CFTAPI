@@ -35,13 +35,18 @@ namespace DashBoardAPI.Controllers
         }
 
         [HttpPost("Create")]
-        public IActionResult CreateComplaint([FromBody] CreateComplaintRequest request)
+        public IActionResult CreateComplaint([FromBody] JsonElement request)
         {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<ComplaintEntity>(request.GetRawText());
+
+            var data1=_complaintservice.InsertComplaintDetails(data);
+
             return Ok(new ApiResponse<object>
             {
                 Success = true,
                 Message = "Complaint created",
-                Data = new { ComplaintId = 402 }
+                Data = new { ComplaintId = data1 }
             });
         }
 

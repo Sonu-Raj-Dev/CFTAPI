@@ -53,6 +53,39 @@ namespace DashBoardAPI.Service.ComplaintService
             return responses;
         }
 
+        public JsonResponseEntity InsertComplaintDetails(ComplaintEntity Data)
+        {
+            try
+            {
+              
+                var authCommand = new SqlCommand("stp_Insertintocomplaintmaster");
+                authCommand.CommandType = CommandType.StoredProcedure;
+                authCommand.Parameters.AddWithValue("@CustomerId", Data.CustomerId);
+                authCommand.Parameters.AddWithValue("@NatureOfComplaint", Data.NatureOfComplaint);
+                authCommand.Parameters.AddWithValue("@Complaintdetails", Data.Complaintdetails);
+                authCommand.Parameters.AddWithValue("@CreatedBy", Data.CreatedBy);
 
+                var response = _complaintRepository.ExecuteProcedure(authCommand);
+
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Success,
+                    Message = "Complaint registered successfully",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception here
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while inserting complaint: " + ex.Message,
+                    Data = null
+                };
+            }
+        }
+
+       
     }
 }

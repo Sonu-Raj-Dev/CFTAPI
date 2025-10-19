@@ -15,5 +15,8 @@
         public string StatusName {  get; set; }
         public string UserId { get; set; }
         public string RoleId { get;set; }
+
+        public Int64 EngineerId { get; set; }
+
     }
 }
