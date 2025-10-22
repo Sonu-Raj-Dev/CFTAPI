@@ -45,11 +45,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
         policy
-            .SetIsOriginAllowed(_ => true)
+            .WithOrigins("*")
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
+            .AllowAnyMethod());
 });
+
 
 
 var app = builder.Build();
