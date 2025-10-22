@@ -43,7 +43,7 @@ builder.Services.AddMemoryCache();
 //});
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("SameOriginPolicy", policy =>
         policy
             .WithOrigins("*")
             .AllowAnyHeader()
@@ -65,7 +65,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 // Apply CORS before authorization
-app.UseCors("AllowReactApp");
+app.UseCors("SameOriginPolicy");
 
 app.UseAuthorization();
 
