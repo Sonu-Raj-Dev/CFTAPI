@@ -59,5 +59,17 @@ namespace DashBoardAPI.Controllers
                 Message = "Engineer assigned"
             });
         }
+        [HttpPost("Delete")]
+        public IActionResult Delete([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<ComplaintEntity>(request.GetRawText());
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Complaint deleted"
+            });
+        }
     }
 }

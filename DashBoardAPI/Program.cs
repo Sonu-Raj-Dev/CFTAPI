@@ -34,13 +34,23 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddMemoryCache();
 
 // ✅ CORS configuration for React
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowReactApp", policy =>
+//        policy.WithOrigins("http://localhost:3000","http://CFTManagement.somee.com", "https://CFTManagement.somee.com", "https://cftmanagementr.vercel.app")  // React default port
+//              .AllowAnyHeader()
+//              .AllowAnyMethod());
+//});
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
-        policy.WithOrigins("http://localhost:3000","http://CFTManagement.somee.com", "https://CFTManagement.somee.com", "https://cftmanagementr.vercel.app")  // React default port
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddPolicy("AllowAll", policy =>
+        policy
+            .SetIsOriginAllowed(_ => true)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
+
 
 var app = builder.Build();
 
