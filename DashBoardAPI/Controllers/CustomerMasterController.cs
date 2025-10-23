@@ -2,6 +2,7 @@
 using DashBoardAPI.Service.CustomerService;
 using DashBoardAPI.Service.LoginService;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using static DashBoardAPI.Entity.MasterModels;
 
 namespace DashBoardAPI.Controllers
@@ -26,6 +27,21 @@ namespace DashBoardAPI.Controllers
         public IActionResult GetAllCustomers()
         {
             var customer = _customerservice.GetCustomerDetails();
+
+            return Ok(new
+            {
+                Success = true,
+                Data = customer
+            });
+        }
+
+        [HttpPost("Create")]
+        public IActionResult Create([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<CustomerEntity>(request.GetRawText());
+
+            var customer = _customerservice.InsertUpdateCustomerMaster(data);
 
             return Ok(new
             {

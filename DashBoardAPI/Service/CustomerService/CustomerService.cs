@@ -15,7 +15,7 @@ namespace DashBoardAPI.Service.CustomerService
 
         }
 
-    
+
         public List<JsonResponseEntity> GetCustomerDetails()
         {
             var responses = new List<JsonResponseEntity>();
@@ -25,7 +25,7 @@ namespace DashBoardAPI.Service.CustomerService
                 using (var authCommand = new SqlCommand("stpGetCustomerDetails"))
                 {
                     authCommand.CommandType = CommandType.StoredProcedure;
-                  
+
                     var complaints = _customerRepository.GetRecords(authCommand).ToList();
 
                     foreach (var item in complaints)
@@ -52,6 +52,40 @@ namespace DashBoardAPI.Service.CustomerService
             return responses;
         }
 
+        public JsonResponseEntity InsertUpdateCustomerMaster(CustomerEntity customer)
+        {
 
+            var responses = new JsonResponseEntity();
+
+            try
+            {
+
+                var authCommand = new SqlCommand("stpInsertUpdateCustomerMaster");
+                    authCommand.CommandType = CommandType.StoredProcedure;
+                authCommand.Parameters.AddWithValue("@Id", customer.Id);
+                authCommand.Parameters.AddWithValue("@Name", customer.Name);
+                authCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
+                authCommand.Parameters.AddWithValue("@Email", customer.Email);
+                authCommand.Parameters.AddWithValue("@Address", customer.Address);
+                authCommand.Parameters.AddWithValue("@IsActive", customer.IsActive);
+                var complaints = _customerRepository.GetRecords(authCommand).ToList();
+
+
+                responses.Status = ApiStatus.OK;
+                           responses.Message = "Customer Created successfully.";
+                           responses.Data = complaints;
+
+            }
+            catch (Exception ex)
+            {
+
+                responses.Status = ApiStatus.Error;
+                responses.Message = "Error occurred while fetching customer: " + ex.Message;
+                responses.Data = null;
+            }
+
+            return responses;
+        }
+    
     }
 }
