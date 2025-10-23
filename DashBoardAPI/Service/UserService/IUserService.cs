@@ -5,5 +5,6 @@ namespace DashBoardAPI.Service.UserService
     public interface IUserService
     {
         List<JsonResponseEntity> GetUserDetails();
+        JsonResponseEntity InsertUpdateUserMaster(UserEntity users);
     }
 }

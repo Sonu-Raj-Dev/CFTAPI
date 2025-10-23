@@ -1,6 +1,7 @@
 ﻿using DashBoardAPI.Entity;
 using DashBoardAPI.Service.UserService;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using static DashBoardAPI.Entity.MasterModels;
 
 namespace DashBoardAPI.Controllers
@@ -30,7 +31,21 @@ namespace DashBoardAPI.Controllers
                 Data = Engineer
             });
         }
-       
+        [HttpPost("Create")]
+        public IActionResult Create([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<UserEntity>(request.GetRawText());
+           
+
+            var Engineer = _userservice.InsertUpdateUserMaster(data);
+
+            return Ok(new
+            {
+                Success = true,
+                Data = Engineer
+            });
+        }
 
         [HttpPost("GetUserRoles")]
         public IActionResult GetUserRoles([FromQuery] long userId)

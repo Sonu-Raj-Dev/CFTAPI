@@ -22,7 +22,7 @@ namespace DashBoardAPI.Service.UserService
 
             try
             {
-                using (var authCommand = new SqlCommand("stpGetEngineerDetails"))
+                using (var authCommand = new SqlCommand("stpGetUserDetails"))
                 {
                     authCommand.CommandType = CommandType.StoredProcedure;
 
@@ -51,6 +51,44 @@ namespace DashBoardAPI.Service.UserService
 
             return responses;
         }
+        public JsonResponseEntity InsertUpdateUserMaster(UserEntity users)
+        {
+            var response = new JsonResponseEntity();
 
+            try
+            {
+                var authCommand = new SqlCommand("stpInsertUpdateUserMaster");
+                authCommand.CommandType = CommandType.StoredProcedure;
+
+                authCommand.Parameters.AddWithValue("@UserId", users.Id);
+                authCommand.Parameters.AddWithValue("@UserName", users.Name);
+                authCommand.Parameters.AddWithValue("@Email", users.Email);
+                authCommand.Parameters.AddWithValue("@Password", users.Password);    
+
+                // If repository returns UserEntity, convert it to JsonResponseEntity
+                var result = _userRepository.GetRecord(authCommand);
+
+                if (result != null)
+                {
+                    response.Status = ApiStatus.Success;
+                    response.Message = "User saved successfully";
+                    response.Data = result; // Store the UserEntity in Data property
+                }
+                else
+                {
+                    response.Status = ApiStatus.Error;
+                    response.Message = "Failed to save user";
+                    response.Data = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Status = ApiStatus.Error;
+                response.Message = "Error occurred while inserting/updating user: " + ex.Message;
+                response.Data = null;
+            }
+
+            return response;
+        }
     }
 }
