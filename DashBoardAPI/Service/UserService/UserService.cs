@@ -63,7 +63,8 @@ namespace DashBoardAPI.Service.UserService
                 authCommand.Parameters.AddWithValue("@UserId", users.Id);
                 authCommand.Parameters.AddWithValue("@UserName", users.Name);
                 authCommand.Parameters.AddWithValue("@Email", users.Email);
-                authCommand.Parameters.AddWithValue("@Password", users.Password);    
+                authCommand.Parameters.AddWithValue("@Password", users.Password);
+                authCommand.Parameters.AddWithValue("@IsActive", users.IsActive);
 
                 // If repository returns UserEntity, convert it to JsonResponseEntity
                 var result = _userRepository.GetRecord(authCommand);
