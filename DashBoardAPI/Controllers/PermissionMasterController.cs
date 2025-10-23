@@ -20,14 +20,41 @@ namespace DashBoardAPI.Controllers
             this._loginservice = complaintservice;
         }
 
-        [HttpGet("GetAllPermissions")]
-        public IActionResult GetAllPermissionByUserIdAndRoleId([FromBody] JsonElement request)
+        [HttpGet("GetAllPermissionByUserId")]
+        public IActionResult GetAllPermissionByUserId([FromBody] JsonElement request)
         {
             JsonResponseEntity apiResponse = new JsonResponseEntity();
             var data = JsonSerializer.Deserialize<PermissionEntity>(request.GetRawText());
 
 
             var Permissions = _loginservice.GetPermissionByUserId(data.Id);
+
+            return Ok(new
+            {
+                Success = true,
+                Data = Permissions
+            });
+        }
+        [HttpGet("GetAllPermissions")]
+        public IActionResult GetAllPermissions()
+        {      
+
+            var Permissions = _loginservice.GetAllPermissions();
+
+            return Ok(new
+            {
+                Success = true,
+                Data = Permissions
+            });
+        }
+        [HttpGet("GetAllPermissionByRoleId")]
+        public IActionResult GetAllPermissionByRoleId([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<PermissionEntity>(request.GetRawText());
+
+
+            var Permissions = _loginservice.GetPermissionsByRoleId(data.RoleId);
 
             return Ok(new
             {

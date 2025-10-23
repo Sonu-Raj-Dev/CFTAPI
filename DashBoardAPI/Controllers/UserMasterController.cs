@@ -47,6 +47,25 @@ namespace DashBoardAPI.Controllers
             });
         }
 
+        [HttpPost("CreateUserRoleMapping")]
+        public IActionResult CreateUserRoleMapping([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<UserEntity>(request.GetRawText());
+
+
+            var Engineer = _userservice.InsertUpdateUserRolePermission(data);
+
+            return Ok(new
+            {
+                Success = true,
+                Data = Engineer
+            });
+        }
+
+
+
+
         [HttpPost("GetUserRoles")]
         public IActionResult GetUserRoles([FromQuery] long userId)
         {

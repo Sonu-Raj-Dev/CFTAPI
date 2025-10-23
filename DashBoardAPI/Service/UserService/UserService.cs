@@ -91,5 +91,43 @@ namespace DashBoardAPI.Service.UserService
 
             return response;
         }
+        public JsonResponseEntity InsertUpdateUserRolePermission(UserEntity users)
+        {
+            var response = new JsonResponseEntity();
+
+            try
+            {
+                var authCommand = new SqlCommand("stpInsertUpdateUserRolePermissionMaster");
+                authCommand.CommandType = CommandType.StoredProcedure;
+
+                authCommand.Parameters.AddWithValue("@UserId", users.Id);
+                authCommand.Parameters.AddWithValue("@UserName", users.UserId);
+                authCommand.Parameters.AddWithValue("@Email", users.RoleId);
+                authCommand.Parameters.AddWithValue("@IsActive", users.IsActive);
+                var result = _userRepository.GetRecord(authCommand);
+
+                if (result != null)
+                {
+                    response.Status = ApiStatus.Success;
+                    response.Message = "Role Permission saved successfully";
+                    response.Data = result; // Store the UserEntity in Data property
+                }
+                else
+                {
+                    response.Status = ApiStatus.Error;
+                    response.Message = "Failed to save user";
+                    response.Data = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Status = ApiStatus.Error;
+                response.Message = "Error occurred while inserting/updating user: " + ex.Message;
+                response.Data = null;
+            }
+
+            return response;
+        }
+        
     }
 }

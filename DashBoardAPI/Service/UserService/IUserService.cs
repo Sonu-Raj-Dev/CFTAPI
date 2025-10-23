@@ -6,5 +6,6 @@ namespace DashBoardAPI.Service.UserService
     {
         List<JsonResponseEntity> GetUserDetails();
         JsonResponseEntity InsertUpdateUserMaster(UserEntity users);
+        JsonResponseEntity InsertUpdateUserRolePermission(UserEntity users);
     }
 }

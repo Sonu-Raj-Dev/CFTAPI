@@ -1,4 +1,5 @@
-﻿using DashBoardAPI.Entity;
+﻿using Azure;
+using DashBoardAPI.Entity;
 using DashBoardAPI.Repository;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Data;
@@ -102,6 +103,71 @@ namespace DashBoardAPI.Service.LoginService
             {
 
             }
+            return response;
+        }
+        public List<JsonResponseEntity> GetAllPermissions()
+        {
+            var response = new List<JsonResponseEntity>();
+
+            try
+            {
+                var rolePermissionCommand = new SqlCommand("stpGetAllPermissions");
+                rolePermissionCommand.CommandType = CommandType.StoredProcedure;
+
+                var permissions = _permissionRepository.GetRecords(rolePermissionCommand).ToList();
+                foreach (var item in permissions)
+                {
+                    response.Add(new JsonResponseEntity
+                    {
+                        Status = ApiStatus.OK,
+                        Message = "Permission fetched successfully.",
+                        Data = item
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while fetching Permission: " + ex.Message,
+                    Data = null
+                });
+            }
+
+            return response;
+        }
+        public List<JsonResponseEntity> GetPermissionsByRoleId(Int64 RoleId)
+        {
+            var response = new List<JsonResponseEntity>();
+
+            try
+            {
+                var rolePermissionCommand = new SqlCommand("stpGetUserRolePermissionsByRoleId");
+                rolePermissionCommand.CommandType = CommandType.StoredProcedure;
+                rolePermissionCommand.Parameters.AddWithValue("@RoleId", RoleId);
+                var permissions = _permissionRepository.GetRecords(rolePermissionCommand).ToList();
+                foreach (var item in permissions)
+                {
+                    response.Add(new JsonResponseEntity
+                    {
+                        Status = ApiStatus.OK,
+                        Message = "Permission fetched successfully.",
+                        Data = item
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while fetching Permission: " + ex.Message,
+                    Data = null
+                });
+            }
+
             return response;
         }
     }

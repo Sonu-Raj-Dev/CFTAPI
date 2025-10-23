@@ -5,6 +5,7 @@ using DashBoardAPI.Service.CustomerService;
 using DashBoardAPI.Service.DashBoardService;
 using DashBoardAPI.Service.EngineerService;
 using DashBoardAPI.Service.LoginService;
+using DashBoardAPI.Service.RoleService;
 using DashBoardAPI.Service.UserService;
 using Microsoft.EntityFrameworkCore;
 using System.Security;
@@ -31,6 +32,8 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IComplaintService, ComplaintService>();
 builder.Services.AddScoped<IEngineerService, EngineerServeice>(); 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+
 builder.Services.AddMemoryCache();
 
 // ✅ CORS configuration for React
