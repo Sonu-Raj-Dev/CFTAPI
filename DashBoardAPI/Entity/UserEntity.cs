@@ -17,9 +17,15 @@ namespace DashBoardAPI.Entity
         [JsonPropertyName("password")]
         public string Password { get; set; }
 
-        [JsonPropertyName("userid")]
+        [JsonPropertyName("userId")]
         public Int64 UserId { get; set; }
-        [JsonPropertyName("roleid")]
+        [JsonPropertyName("roleId")]
         public Int64 RoleId { get; set; }
+
+        [JsonPropertyName("roleName")]
+        public string RoleName { get; set; }
+
+        [JsonPropertyName("isactive")]
+        public bool IsActive { get; set; }
     }
 }

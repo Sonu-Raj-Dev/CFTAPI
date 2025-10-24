@@ -100,9 +100,9 @@ namespace DashBoardAPI.Service.UserService
                 var authCommand = new SqlCommand("stpInsertUpdateUserRolePermissionMaster");
                 authCommand.CommandType = CommandType.StoredProcedure;
 
-                authCommand.Parameters.AddWithValue("@UserId", users.Id);
-                authCommand.Parameters.AddWithValue("@UserName", users.UserId);
-                authCommand.Parameters.AddWithValue("@Email", users.RoleId);
+                authCommand.Parameters.AddWithValue("@Id", users.Id);
+                authCommand.Parameters.AddWithValue("@UserId", users.UserId);
+                authCommand.Parameters.AddWithValue("@RoleId", users.RoleId);
                 authCommand.Parameters.AddWithValue("@IsActive", users.IsActive);
                 var result = _userRepository.GetRecord(authCommand);
 
@@ -128,6 +128,40 @@ namespace DashBoardAPI.Service.UserService
 
             return response;
         }
-        
+        public List<JsonResponseEntity> GetUserRoleDetails()
+        {
+            var responses = new List<JsonResponseEntity>();
+
+            try
+            {
+                using (var authCommand = new SqlCommand("stp_getuserroledetails"))
+                {
+                    authCommand.CommandType = CommandType.StoredProcedure;
+
+                    var Users = _userRepository.GetRecords(authCommand).ToList();
+
+                    foreach (var item in Users)
+                    {
+                        responses.Add(new JsonResponseEntity
+                        {
+                            Status = ApiStatus.OK,
+                            Message = "Users fetched successfully.",
+                            Data = item
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                responses.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while fetching Users: " + ex.Message,
+                    Data = null
+                });
+            }
+
+            return responses;
+        }
     }
 }
