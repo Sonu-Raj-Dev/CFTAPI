@@ -37,23 +37,14 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddMemoryCache();
 
 // ✅ CORS configuration for React
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowReactApp", policy =>
-//        policy.WithOrigins("http://localhost:3000","http://CFTManagement.somee.com", "https://CFTManagement.somee.com", "https://cftmanagementr.vercel.app")  // React default port
-//              .AllowAnyHeader()
-//              .AllowAnyMethod());
-//});
-// In Program.cs (for .NET 6+)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+    options.AddPolicy("AllowReactApp", policy =>
+        policy.WithOrigins("http://localhost:3000", "http://CFTManagement.somee.com", "https://CFTManagement.somee.com", "https://cftmanagementr.vercel.app")  // React default port
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
+
 
 
 
@@ -70,7 +61,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 // Apply CORS before authorization
-app.UseCors("AllowAll");
+app.UseCors("AllowReactApp");
 
 app.UseAuthorization();
 
