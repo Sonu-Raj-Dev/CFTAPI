@@ -44,13 +44,15 @@ builder.Services.AddMemoryCache();
 //              .AllowAnyHeader()
 //              .AllowAnyMethod());
 //});
+// In Program.cs (for .NET 6+)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("SameOriginPolicy", policy =>
-        policy
-            .WithOrigins("*")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 
@@ -68,7 +70,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 // Apply CORS before authorization
-app.UseCors("SameOriginPolicy");
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
