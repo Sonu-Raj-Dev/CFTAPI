@@ -37,14 +37,21 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddMemoryCache();
 
 // ✅ CORS configuration for React
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowReactApp", policy =>
+//        policy.WithOrigins("http://localhost:3000","http://CFTManagement.somee.com", "https://CFTManagement.somee.com", "https://cftmanagementr.vercel.app")  // React default port
+//              .AllowAnyHeader()
+//              .AllowAnyMethod());
+//});
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
-        policy.WithOrigins("http://localhost:3000", "http://CFTManagement.somee.com", "https://CFTManagement.somee.com", "https://cftmanagementr.vercel.app", "https://cftmanagement.somee.com")  // React default port
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddPolicy("SameOriginPolicy", policy =>
+        policy
+            .WithOrigins("*")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
 });
-
 
 
 
@@ -61,7 +68,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 // Apply CORS before authorization
-app.UseCors("AllowReactApp");
+app.UseCors("SameOriginPolicy");
 
 app.UseAuthorization();
 
