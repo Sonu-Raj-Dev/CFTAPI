@@ -8,11 +8,12 @@ namespace DashBoardAPI.Service.ComplaintService
     public class ComplaintService:IComplaintService
     {
         private readonly IRepository<ComplaintEntity> _complaintRepository;
+        private readonly IRepository<EmailEntity> _emailRepository;
 
-        public ComplaintService(IRepository<ComplaintEntity> complaintRepository)
+        public ComplaintService(IRepository<ComplaintEntity> complaintRepository, IRepository<EmailEntity> emailRepository)
         {
             _complaintRepository = complaintRepository;
-
+            _emailRepository = emailRepository;
         }
 
         public List<JsonResponseEntity> GetComplaintDetailsByUserIdAndRoleId(long UserId, long RoleId)
@@ -85,7 +86,96 @@ namespace DashBoardAPI.Service.ComplaintService
                 };
             }
         }
+        
+     public JsonResponseEntity AssignEngineerToComplaint(ComplaintEntity Data)
+        {
+            try
+            {
 
-       
+                var authCommand = new SqlCommand("stpAssignEngineertocomplaints");
+                authCommand.CommandType = CommandType.StoredProcedure;
+                authCommand.Parameters.AddWithValue("@Id", Data.Id);
+                authCommand.Parameters.AddWithValue("@EngineerId", Data.EngineerId);
+
+                var response = _complaintRepository.ExecuteProcedure(authCommand);
+
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Success,
+                    Message = "Engineer assigner successfully",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception here
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while assigning engineer: " + ex.Message,
+                    Data = null
+                };
+            }
+        }
+        public JsonResponseEntity DeleteComplaint(Int64 Id)
+        {
+            try
+            {
+
+                var authCommand = new SqlCommand("stpDeletecomplaints");
+                authCommand.CommandType = CommandType.StoredProcedure;
+                authCommand.Parameters.AddWithValue("@Id", Id);
+              
+                var response = _complaintRepository.ExecuteProcedure(authCommand);
+
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Success,
+                    Message = "Complaint deleted successfully",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception here
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while Complaint deletion: " + ex.Message,
+                    Data = null
+                };
+            }
+        }
+
+        public JsonResponseEntity GetEmailDetailByComplaintId(Int64 Id)
+        {
+
+            try
+            {
+
+                var authCommand = new SqlCommand("stpGetEmailTemplateDetailsById");
+                authCommand.CommandType = CommandType.StoredProcedure;
+                authCommand.Parameters.AddWithValue("@Id", Id);
+            
+                var response = _emailRepository.GetRecord(authCommand);
+
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Success,
+                    Message = "Engineer assigner successfully",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception here
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while assigning engineer: " + ex.Message,
+                    Data = null
+                };
+            }
+        }
     }
 }

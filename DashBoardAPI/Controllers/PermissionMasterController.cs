@@ -35,7 +35,7 @@ namespace DashBoardAPI.Controllers
                 Data = Permissions
             });
         }
-        [HttpGet("GetAllPermissions")]
+        [HttpPost("GetAllPermissions")]
         public IActionResult GetAllPermissions()
         {      
 
@@ -47,7 +47,7 @@ namespace DashBoardAPI.Controllers
                 Data = Permissions
             });
         }
-        [HttpGet("GetAllPermissionByRoleId")]
+        [HttpPost("GetAllPermissionByRoleId")]
         public IActionResult GetAllPermissionByRoleId([FromBody] JsonElement request)
         {
             JsonResponseEntity apiResponse = new JsonResponseEntity();
@@ -62,5 +62,22 @@ namespace DashBoardAPI.Controllers
                 Data = Permissions
             });
         }
+
+        [HttpPost("SavePermissionByRoleId")]
+        public IActionResult SavePermissionByRoleId([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<PermissionEntity>(request.GetRawText());
+
+
+            var Permissions = _loginservice.SavePermissionsByRoleId(data);
+
+            return Ok(new
+            {
+                Success = true,
+                Data = Permissions
+            });
+        }
+
     }
 }

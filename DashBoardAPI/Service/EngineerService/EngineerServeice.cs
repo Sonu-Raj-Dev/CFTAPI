@@ -51,6 +51,40 @@ namespace DashBoardAPI.Service.EngineerService
 
             return responses;
         }
+        public JsonResponseEntity InsertUpdateEnginerMaster(EngineerEntity customer)
+        {
+
+            var responses = new JsonResponseEntity();
+
+            try
+            {
+
+                var authCommand = new SqlCommand("stpInsertUpdateEngineerMaster");
+                authCommand.CommandType = CommandType.StoredProcedure;
+                authCommand.Parameters.AddWithValue("@Id", customer.Id);
+                authCommand.Parameters.AddWithValue("@Name", customer.Name);
+                authCommand.Parameters.AddWithValue("@Mobile", customer.MobileNumber);
+                authCommand.Parameters.AddWithValue("@Email", customer.Email);       
+                authCommand.Parameters.AddWithValue("@IsActive", customer.IsActive);
+                var complaints = _engineerRepository.GetRecords(authCommand).ToList();
+
+
+                responses.Status = ApiStatus.OK;
+                responses.Message = "Enginer Created successfully.";
+                responses.Data = complaints;
+
+            }
+            catch (Exception ex)
+            {
+
+                responses.Status = ApiStatus.Error;
+                responses.Message = "Error occurred while fetching Enginer: " + ex.Message;
+                responses.Data = null;
+            }
+
+            return responses;
+        }
+
 
     }
 }

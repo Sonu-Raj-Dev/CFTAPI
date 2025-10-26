@@ -13,7 +13,7 @@ namespace DashBoardAPI
     {
         #region Properties
 
-        public Int64 Id { get; set; }
+     
 
         [JsonPropertyName("isactive")]
         public bool IsActive { get; set; }

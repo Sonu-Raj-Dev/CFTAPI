@@ -170,5 +170,39 @@ namespace DashBoardAPI.Service.LoginService
 
             return response;
         }
+
+        public List<JsonResponseEntity> SavePermissionsByRoleId(PermissionEntity entity)
+        {
+            var response = new List<JsonResponseEntity>();
+
+            try
+            {
+                var rolePermissionCommand = new SqlCommand("stpInserUpdateRolePermissions");
+                rolePermissionCommand.CommandType = CommandType.StoredProcedure;
+                rolePermissionCommand.Parameters.AddWithValue("@RoleId", entity.RoleId);
+                rolePermissionCommand.Parameters.AddWithValue("@PermissionIds", entity.PermissionIds);
+
+                var permissions = _permissionRepository.GetRecords(rolePermissionCommand);
+
+                response.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.OK,
+                    Message = "Permission added successfully.",
+                    Data = permissions
+                });              
+
+            }
+            catch (Exception ex)
+            {
+                response.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while fetching Permission: " + ex.Message,
+                    Data = null
+                });
+            }
+
+            return response;
+        }
     }
 }

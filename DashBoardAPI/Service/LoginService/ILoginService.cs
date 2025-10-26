@@ -9,5 +9,6 @@ namespace DashBoardAPI.Service.LoginService
         List<JsonResponseEntity> GetAllPermissions();
 
         List<JsonResponseEntity> GetPermissionsByRoleId(Int64 RoleId);
+        List<JsonResponseEntity> SavePermissionsByRoleId(PermissionEntity entity);
     }
 }
