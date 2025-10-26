@@ -27,17 +27,14 @@ namespace DashBoardAPI
 
         public IConfiguration Configuration { get; }
 
-        // Security Headers
+        // Security Headers - REMOVED Content-Security-Policy that blocks CORS
         private static List<KeyValuePair<string, string>> InclusionHeaderList = new List<KeyValuePair<string, string>>() {
-            new KeyValuePair<string, string>("Content-Security-Policy", "default-src https: 'unsafe-inline' 'unsafe-eval'; script-src https: 'unsafe-inline' 'unsafe-eval'; style-src https: 'unsafe-inline'; img-src https: data:; font-src https:; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;"),
+            // Remove or modify Content-Security-Policy that blocks cross-origin requests
             new KeyValuePair<string, string>("X-Content-Type-Options", "nosniff"),
             new KeyValuePair<string, string>("X-Xss-Protection", "1; mode=block"),
             new KeyValuePair<string, string>("X-Frame-Options", "SAMEORIGIN"),
             new KeyValuePair<string, string>("Strict-Transport-Security", "max-age=31536000;"),
-            new KeyValuePair<string, string>("Feature-Policy", "accelerometer 'none'; camera 'none'; microphone 'none'"),
             new KeyValuePair<string, string>("Referrer-Policy", "no-referrer, strict-origin-when-cross-origin"),
-            new KeyValuePair<string, string>("Cross-Origin-Opener-Policy", "same-origin"),
-            new KeyValuePair<string, string>("Cross-Origin-Resource-Policy", "same-origin"),
             new KeyValuePair<string, string>("Cache-Control", "no-cache, must-revalidate, no-store")
         };
 
@@ -46,12 +43,12 @@ namespace DashBoardAPI
             "Server"
         };
 
-        // Allowed Origins - Fixed: Remove "/api" from domain
+        // Allowed Origins
         private static string[] AllowedDomains = new string[]
         {
             "http://localhost:3000",
             "https://cftmanagementr.vercel.app",
-            "https://cftmanagement.somee.com"
+            "https://cftmanagement.somee.com" 
         };
 
         public void ConfigureServices(IServiceCollection services)
@@ -67,14 +64,6 @@ namespace DashBoardAPI
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
-                });
-
-                // Add a fallback policy
-                options.AddDefaultPolicy(policy =>
-                {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
                 });
             });
 
@@ -102,25 +91,7 @@ namespace DashBoardAPI
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            // Security Headers middleware - BEFORE CORS
-            app.Use(async (context, next) =>
-            {
-                // Remove unwanted headers
-                foreach (var header in ExclusionHeaderList)
-                {
-                    context.Response.Headers.Remove(header);
-                }
-
-                // Add security headers (excluding CORS headers)
-                foreach (var header in InclusionHeaderList)
-                {
-                    context.Response.Headers[header.Key] = header.Value;
-                }
-
-                await next();
-            });
-
-            // CORS middleware - AFTER security headers, BEFORE authorization
+            // CORS middleware - MUST come before UseAuthorization and UseEndpoints
             app.UseCors("AllowReactApp");
 
             // Handle OPTIONS requests for preflight
@@ -132,6 +103,28 @@ namespace DashBoardAPI
                     await context.Response.CompleteAsync();
                     return;
                 }
+                await next();
+            });
+
+            // Security Headers middleware - AFTER CORS
+            app.Use(async (context, next) =>
+            {
+                // Remove unwanted headers
+                foreach (var header in ExclusionHeaderList)
+                {
+                    context.Response.Headers.Remove(header);
+                }
+
+                // Add security headers (excluding CORS headers)
+                foreach (var header in InclusionHeaderList)
+                {
+                    // Don't override CORS headers
+                    if (!context.Response.Headers.ContainsKey(header.Key))
+                    {
+                        context.Response.Headers[header.Key] = header.Value;
+                    }
+                }
+
                 await next();
             });
 
