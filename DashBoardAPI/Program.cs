@@ -17,10 +17,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// If you use EF Core, uncomment this line and set your connection string
-// builder.Services.AddDbContext<DataContext>(options =>
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 // Bind ConnectionStrings section
 builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));
 
@@ -36,28 +32,23 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddMemoryCache();
 
-// ✅ CORS configuration for React
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowReactApp", policy =>
-//        policy.WithOrigins("http://localhost:3000","http://CFTManagement.somee.com", "https://CFTManagement.somee.com", "https://cftmanagementr.vercel.app")  // React default port
-//              .AllowAnyHeader()
-//              .AllowAnyMethod());
-//});
+// CORS configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("SameOriginPolicy", policy =>
-        policy
-            .WithOrigins("*")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
-
-
 
 var app = builder.Build();
 
-// Middleware order matters — don’t rearrange unless you enjoy debugging nonsense
+// ✅ CRITICAL: Add Static Files middleware for Somee.com
+app.UseStaticFiles();
+
+// ✅ CRITICAL: Add Default Files middleware
+app.UseDefaultFiles();
+
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
@@ -67,12 +58,19 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-// Apply CORS before authorization
-app.UseCors("SameOriginPolicy");
+// Apply CORS
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
-// Map controllers (no need to overcomplicate routes)
+// Map controllers
 app.MapControllers();
-app.MapGet("/", () => "Application is running");
+
+// ✅ ADD THESE ENDPOINTS FOR SOMEE.COM
+app.MapGet("/", () => "Application is running successfully on Somee.com!");
+app.MapGet("/api/health", () => new { status = "OK", message = "API is running" });
+
+// ✅ Fallback route for SPA
+app.MapFallbackToFile("index.html");
+
 app.Run();
