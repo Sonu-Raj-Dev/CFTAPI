@@ -68,7 +68,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 // Apply CORS before authorization
-app.UseCors("SameOriginPolicy");
+app.UseCors("AllowReactApp");
 
 app.UseAuthorization();
 
