@@ -74,5 +74,5 @@ app.UseAuthorization();
 
 // Map controllers (no need to overcomplicate routes)
 app.MapControllers();
-
+app.MapGet("/", () => "Application is running");
 app.Run();
