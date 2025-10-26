@@ -61,11 +61,12 @@ namespace DashBoardAPI.Service.ComplaintService
               
                 var authCommand = new SqlCommand("stp_Insertintocomplaintmaster");
                 authCommand.CommandType = CommandType.StoredProcedure;
+                authCommand.Parameters.AddWithValue("@Id", Data.Id);
                 authCommand.Parameters.AddWithValue("@CustomerId", Data.CustomerId);
                 authCommand.Parameters.AddWithValue("@NatureOfComplaint", Data.NatureOfComplaint);
                 authCommand.Parameters.AddWithValue("@Complaintdetails", Data.Complaintdetails);
                 authCommand.Parameters.AddWithValue("@CreatedBy", Data.CreatedBy);
-
+                authCommand.Parameters.AddWithValue("@StatusId", Data.StatusId);
                 var response = _complaintRepository.ExecuteProcedure(authCommand);
 
                 return new JsonResponseEntity

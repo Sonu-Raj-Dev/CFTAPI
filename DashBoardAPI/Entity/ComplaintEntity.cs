@@ -4,7 +4,7 @@ namespace DashBoardAPI.Entity
 {
     public class ComplaintEntity:BaseEntity
     {
-       // [JsonPropertyName("id")]
+       [JsonPropertyName("id")]
         public Int64 Id { get; set; }
         public long CustomerId { get; set; }
         public string NatureOfComplaint { get; set; } = "";
@@ -22,6 +22,9 @@ namespace DashBoardAPI.Entity
 
         [JsonPropertyName("engineerId")]
         public Int64 EngineerId { get; set; }
+
+        [JsonPropertyName("statusId")]
+        public Int64 StatusId { get; set; }
 
     }
 }
