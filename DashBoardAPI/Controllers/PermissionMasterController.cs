@@ -20,7 +20,7 @@ namespace DashBoardAPI.Controllers
             this._loginservice = complaintservice;
         }
 
-        [HttpGet("GetAllPermissionByUserId")]
+        [HttpPost("GetAllPermissionByUserId")]
         public IActionResult GetAllPermissionByUserId([FromBody] JsonElement request)
         {
             JsonResponseEntity apiResponse = new JsonResponseEntity();

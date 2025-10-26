@@ -1,4 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using DashBoardAPI.Repository;
+using DashBoardAPI.Service.ComplaintService;
+using DashBoardAPI.Service.CustomerService;
+using DashBoardAPI.Service.DashBoardService;
+using DashBoardAPI.Service.EngineerService;
+using DashBoardAPI.Service.LoginService;
+using DashBoardAPI.Service.RoleService;
+using DashBoardAPI.Service.UserService;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,51 +27,38 @@ namespace DashBoardAPI
 
         public IConfiguration Configuration { get; }
 
-        #region Security Headers Properties
-        //headers to add
+        // Security Headers
         private static List<KeyValuePair<string, string>> InclusionHeaderList = new List<KeyValuePair<string, string>>() {
             new KeyValuePair<string, string>("Content-Security-Policy", "default-src https: 'unsafe-inline' 'unsafe-eval'; script-src https: 'unsafe-inline' 'unsafe-eval'; style-src https: 'unsafe-inline'; img-src https: data:; font-src https:; object-src 'none'; frame-src 'none'; upgrade-insecure-requests;"),
             new KeyValuePair<string, string>("X-Content-Type-Options", "nosniff"),
             new KeyValuePair<string, string>("X-Xss-Protection", "1; mode=block"),
             new KeyValuePair<string, string>("X-Frame-Options", "SAMEORIGIN"),
             new KeyValuePair<string, string>("Strict-Transport-Security", "max-age=31536000;"),
-            new KeyValuePair<string, string>("X-Content-Type", "nosniff"),
-            new KeyValuePair<string, string>("Access-Control-Allow-Headers", "Content-Type, Authorization"),
-            new KeyValuePair<string, string>("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS"),
             new KeyValuePair<string, string>("Feature-Policy", "accelerometer 'none'; camera 'none'; microphone 'none'"),
             new KeyValuePair<string, string>("Referrer-Policy", "no-referrer, strict-origin-when-cross-origin"),
             new KeyValuePair<string, string>("Cross-Origin-Opener-Policy", "same-origin"),
             new KeyValuePair<string, string>("Cross-Origin-Resource-Policy", "same-origin"),
-            new KeyValuePair<string, string>("Cache-Control", "no-cache, must-revalidate, no-store"),
-            new KeyValuePair<string, string>("Access-Control-Allow-Credentials", "true")
+            new KeyValuePair<string, string>("Cache-Control", "no-cache, must-revalidate, no-store")
         };
 
-        //headers to remove
         public static List<string> ExclusionHeaderList = new List<string>() {
             "X-Powered-By",
             "Server"
         };
 
-        //CORS - allowed domains
-        private static string[] AllowedDomains = new string[] {
+        // Allowed Origins - Fixed: Remove "/api" from domain
+        private static string[] AllowedDomains = new string[]
+        {
             "http://localhost:3000",
-            "http://localhost:8080",
-            "http://localhost:6178",
-            "https://localhost:6178",
-            "https://CFTManagement.somee.com",
-            "https://cftmanagementr.vercel.app"
+            "https://cftmanagementr.vercel.app",
+            "https://cftmanagement.somee.com"
         };
 
-        //CORS - allowed methods
-        public static string[] AllowedMethods = new string[] { "POST", "GET", "PUT", "DELETE", "OPTIONS" };
-        #endregion
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
-            // Add CORS configuration
+            // Enhanced CORS configuration
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp", policy =>
@@ -73,13 +68,28 @@ namespace DashBoardAPI
                           .AllowAnyMethod()
                           .AllowCredentials();
                 });
+
+                // Add a fallback policy
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
             });
 
-            // Add other services as needed
-            services.AddSwaggerGen(); // If using Swagger
+            // Register dependencies here
+            services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+            services.AddScoped<IDashBoardService, DashBoardService>();
+            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IComplaintService, ComplaintService>();
+            services.AddScoped<IEngineerService, EngineerServeice>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddSwaggerGen();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -89,7 +99,10 @@ namespace DashBoardAPI
                 app.UseSwaggerUI();
             }
 
-            // Add security headers middleware
+            app.UseHttpsRedirection();
+            app.UseRouting();
+
+            // Security Headers middleware - BEFORE CORS
             app.Use(async (context, next) =>
             {
                 // Remove unwanted headers
@@ -98,9 +111,8 @@ namespace DashBoardAPI
                     context.Response.Headers.Remove(header);
                 }
 
-                // Add security headers
-                var headers = GetInclusiveHeaders(context);
-                foreach (var header in headers)
+                // Add security headers (excluding CORS headers)
+                foreach (var header in InclusionHeaderList)
                 {
                     context.Response.Headers[header.Key] = header.Value;
                 }
@@ -108,11 +120,20 @@ namespace DashBoardAPI
                 await next();
             });
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
-
-            // Use CORS - Must be after UseRouting() and before UseAuthorization()
+            // CORS middleware - AFTER security headers, BEFORE authorization
             app.UseCors("AllowReactApp");
+
+            // Handle OPTIONS requests for preflight
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Method == "OPTIONS")
+                {
+                    context.Response.StatusCode = 200;
+                    await context.Response.CompleteAsync();
+                    return;
+                }
+                await next();
+            });
 
             app.UseAuthorization();
 
@@ -122,47 +143,15 @@ namespace DashBoardAPI
             });
         }
 
-        #region Helper Methods
-        public static List<KeyValuePair<string, string>> GetInclusiveHeaders(HttpContext context)
-        {
-            var headers = new List<KeyValuePair<string, string>>(InclusionHeaderList);
-
-            // Add CORS origin header dynamically
-            var origin = context.Request.Headers["Origin"].ToString();
-            if (AllowedDomains.Contains(origin, StringComparer.OrdinalIgnoreCase))
-            {
-                headers.Add(new KeyValuePair<string, string>("Access-Control-Allow-Origin", origin));
-            }
-            else
-            {
-                // Use environment variable or fallback
-                var webOrigin = Environment.GetEnvironmentVariable("WebOrigin") ?? AllowedDomains.First();
-                headers.Add(new KeyValuePair<string, string>("Access-Control-Allow-Origin", webOrigin));
-            }
-
-            return headers;
-        }
-
-        public static string[] GetAllowedDomains()
-        {
-            return AllowedDomains.Select(ad => ad.ToLower()).ToArray();
-        }
-
-        public static string GetBaseUrl(HttpContext context)
-        {
-            string baseUrl = $"https://{context.Request.Host.Value}{context.Request.PathBase.Value}".ToLower();
-            return baseUrl;
-        }
-
+        // Helper methods
         public static Stream GetStreamFromString(string str)
         {
             var newStream = new MemoryStream();
             var sw = new StreamWriter(newStream);
             sw.Write(str);
             sw.Flush();
-            newStream.Position = 0; // Reset stream position
+            newStream.Position = 0;
             return newStream;
         }
-        #endregion
     }
 }
