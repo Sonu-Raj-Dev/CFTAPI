@@ -26,5 +26,7 @@ namespace DashBoardAPI.Entity
         [JsonPropertyName("statusId")]
         public Int64 StatusId { get; set; }
 
+        public DateTime AssignmentDate { get; set; }
+
     }
 }
