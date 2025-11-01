@@ -9,5 +9,7 @@ namespace DashBoardAPI.Service.ComplaintService
         JsonResponseEntity AssignEngineerToComplaint(ComplaintEntity Data);
         JsonResponseEntity DeleteComplaint(Int64 Id);
         JsonResponseEntity GetEmailDetailByComplaintId(Int64 Id);
+
+        List<JsonResponseEntity> GetNatureOfComplaint();
     }
 }

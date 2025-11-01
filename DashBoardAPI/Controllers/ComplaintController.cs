@@ -50,6 +50,21 @@ namespace DashBoardAPI.Controllers
                 Data = new { ComplaintId = data1 }
             });
         }
+        [HttpPost("GetNatureOfComplaint")]
+        public IActionResult GetNatureOfComplaint([FromBody] JsonElement request)
+        {
+            JsonResponseEntity apiResponse = new JsonResponseEntity();
+            var data = JsonSerializer.Deserialize<ComplaintEntity>(request.GetRawText());
+
+            var data1 = _complaintservice.GetNatureOfComplaint();
+
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Complaint created",
+                Data = new { ComplaintId = data1 }
+            });
+        }
 
         [HttpPost("AssignEngineer")]
         public IActionResult AssignEngineer([FromBody] JsonElement request)

@@ -53,7 +53,41 @@ namespace DashBoardAPI.Service.ComplaintService
 
             return responses;
         }
+        
+          public List<JsonResponseEntity> GetNatureOfComplaint()
+        {
+            var responses = new List<JsonResponseEntity>();
 
+            try
+            {
+                using (var authCommand = new SqlCommand("stp_GetNatureOfComplaintMaster"))
+                {
+                    authCommand.CommandType = CommandType.StoredProcedure;                  
+                    var complaints = _complaintRepository.GetRecords(authCommand).ToList();
+
+                    foreach (var item in complaints)
+                    {
+                        responses.Add(new JsonResponseEntity
+                        {
+                            Status = ApiStatus.OK,
+                            Message = "Nature Of Complaint fetched successfully.",
+                            Data = item
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                responses.Add(new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while fetching complaints: " + ex.Message,
+                    Data = null
+                });
+            }
+
+            return responses;
+        }
         public JsonResponseEntity InsertComplaintDetails(ComplaintEntity Data)
         {
             try
