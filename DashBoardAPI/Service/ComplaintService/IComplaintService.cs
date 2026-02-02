@@ -11,5 +11,7 @@ namespace DashBoardAPI.Service.ComplaintService
         JsonResponseEntity GetEmailDetailByComplaintId(Int64 Id);
 
         List<JsonResponseEntity> GetNatureOfComplaint();
+
+        JsonResponseEntity InsertNatureOfComplaint(ComplaintEntity Data);
     }
 }

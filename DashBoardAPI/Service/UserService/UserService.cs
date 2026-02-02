@@ -102,8 +102,11 @@ namespace DashBoardAPI.Service.UserService
 
                 authCommand.Parameters.AddWithValue("@Id", users.Id);
                 authCommand.Parameters.AddWithValue("@UserId", users.UserId);
-                authCommand.Parameters.AddWithValue("@RoleId", users.RoleId);
+                authCommand.Parameters.AddWithValue("@RoleId", users.RoleId);      
                 authCommand.Parameters.AddWithValue("@IsActive", users.IsActive);
+                authCommand.Parameters.AddWithValue("@Name", users.Name);
+                authCommand.Parameters.AddWithValue("@Email", users.Email);
+                authCommand.Parameters.AddWithValue("@Password", users.Password);
                 var result = _userRepository.GetRecord(authCommand);
 
                 if (result != null)

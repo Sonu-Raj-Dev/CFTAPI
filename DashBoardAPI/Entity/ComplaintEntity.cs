@@ -27,6 +27,9 @@ namespace DashBoardAPI.Entity
         public Int64 StatusId { get; set; }
 
         public DateTime AssignmentDate { get; set; }
+        public string otherNature { get; set; }
+
+        public Int64 NatureOfComplaintId { get; set; }
 
     }
 }

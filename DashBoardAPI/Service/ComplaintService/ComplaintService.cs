@@ -97,7 +97,7 @@ namespace DashBoardAPI.Service.ComplaintService
                 authCommand.CommandType = CommandType.StoredProcedure;
                 authCommand.Parameters.AddWithValue("@Id", Data.Id);
                 authCommand.Parameters.AddWithValue("@CustomerId", Data.CustomerId);
-                authCommand.Parameters.AddWithValue("@NatureOfComplaint", Data.NatureOfComplaint);
+                authCommand.Parameters.AddWithValue("@NatureOfComplaint", Data.NatureOfComplaintId);
                 authCommand.Parameters.AddWithValue("@Complaintdetails", Data.Complaintdetails);
                 authCommand.Parameters.AddWithValue("@CreatedBy", Data.CreatedBy);
                 authCommand.Parameters.AddWithValue("@StatusId", Data.StatusId);
@@ -122,7 +122,37 @@ namespace DashBoardAPI.Service.ComplaintService
             }
         }
         
-     public JsonResponseEntity AssignEngineerToComplaint(ComplaintEntity Data)
+             public JsonResponseEntity InsertNatureOfComplaint(ComplaintEntity Data)
+        {
+            try
+            {
+
+                var authCommand = new SqlCommand("stp_InsertNatureOfComplaint");
+                authCommand.CommandType = CommandType.StoredProcedure;
+               
+                authCommand.Parameters.AddWithValue("@NatureOfComplaint", Data.otherNature);
+                authCommand.Parameters.AddWithValue("@CreatedBy", Data.CreatedBy);
+                var response = _complaintRepository.ExecuteProcedure(authCommand);
+
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Success,
+                    Message = "Nature Of Complaint add successfully",
+                    Data = response
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception here
+                return new JsonResponseEntity
+                {
+                    Status = ApiStatus.Error,
+                    Message = "Error occurred while inserting Nature Of Complaint: " + ex.Message,
+                    Data = null
+                };
+            }
+        }
+        public JsonResponseEntity AssignEngineerToComplaint(ComplaintEntity Data)
         {
             try
             {

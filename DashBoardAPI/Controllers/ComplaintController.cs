@@ -41,6 +41,12 @@ namespace DashBoardAPI.Controllers
             JsonResponseEntity apiResponse = new JsonResponseEntity();
             var data = JsonSerializer.Deserialize<ComplaintEntity>(request.GetRawText());
 
+            if(data.NatureOfComplaint=="Other")
+            {
+                var NatureId=_complaintservice.InsertNatureOfComplaint(data);
+                data.NatureOfComplaintId = Convert.ToInt64(NatureId);
+            }
+
             var data1=_complaintservice.InsertComplaintDetails(data);
 
             return Ok(new ApiResponse<object>
@@ -51,18 +57,16 @@ namespace DashBoardAPI.Controllers
             });
         }
         [HttpPost("GetNatureOfComplaint")]
-        public IActionResult GetNatureOfComplaint([FromBody] JsonElement request)
+        public IActionResult GetNatureOfComplaint()
         {
-            JsonResponseEntity apiResponse = new JsonResponseEntity();
-            var data = JsonSerializer.Deserialize<ComplaintEntity>(request.GetRawText());
-
+           
             var data1 = _complaintservice.GetNatureOfComplaint();
 
             return Ok(new ApiResponse<object>
             {
                 Success = true,
                 Message = "Complaint created",
-                Data = new { ComplaintId = data1 }
+                Data = data1 
             });
         }
 
